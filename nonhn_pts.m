@@ -8,5 +8,5 @@ function [x,y] = nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon)
         x(i) = x(i-1) + u(i-1,1)*cos(theta)*time_sample;
         y(i) = y(i-1) + u(i-1,1)*sin(theta)*time_sample;
     end
-   x,y
+%     x,y
 end
