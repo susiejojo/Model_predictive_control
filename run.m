@@ -3,13 +3,13 @@ clc,clear;
 planning_horizon = 50;
 control_horizon = 10;
 v_guess = ones(planning_horizon,1);
-w_guess = 0.1*ones(planning_horizon,1);
+w_guess = 0.06*ones(planning_horizon,1);
 agent_goal = [125,125];
 agent_pos_list = [];
 v_list = [];
 w_list = [];
 agent_pos = [0,0];
-agent_rad = 1;
+agent_rad = 4;
 v_avg = 5;
 time_sample = 0.1;
 % n = v_avg/time_sample;
@@ -21,16 +21,17 @@ theta_list = [];
 iter = 1;
 % theta_chk = 0;
 theta_chk = atan2(agent_goal(2)-agent_pos(2),agent_goal(1)-agent_pos(1));
+theta_chk
 % Generating 50 waypoints along the way
 for i=1:n
     waypt = [unif_split(i),unif_split(i)];
     waypoints = [waypoints;waypt];
 end
-waypoints
+% waypoints
 for i = 1:control_horizon:n-1
 %     i
     ctrl = getPreds(planning_horizon,waypoints(i:n-1,:),v_guess,w_guess,chckpt,time_sample,theta_chk);
-    ctrl
+%     ctrl
 %     chckpt = agent_pos;
 %     size(ctrl)
 %     [x,y] = nonhn_pts(ctrl,agent_pos,theta,time_sample,control_horizon);
@@ -38,13 +39,16 @@ for i = 1:control_horizon:n-1
     theta = theta_chk;
     for j = 1:control_horizon
 %         agent_pos(j,:)
+%         ctrl(j,2)
         theta = theta + ctrl(j,2)*time_sample;
+%         theta = theta + 0.001*time_sample;
+        theta
         agent_pos(1) = agent_pos(1) + ctrl(j,1)*cos(theta)*time_sample;
         agent_pos(2) = agent_pos(2) + ctrl(j,1)*sin(theta)*time_sample;
         agent_pos
-        waypts_lim = 100;
+        waypts_lim = 120;
         F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim);
-        plot(chckpt(1),chckpt(2),'r*','markersize',50);
+        plot(chckpt(1),chckpt(2),'r*','markersize',25);
         v_list = [v_list;ctrl(j,1)];
         w_list = [w_list;ctrl(j,2)];
         theta_list = [theta_list;theta];
