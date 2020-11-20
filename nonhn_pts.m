@@ -10,6 +10,6 @@ function [velo] = nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon) %this fu
         x(i) = x(i-1) + u(i-1,1)*cos(theta_new)*time_sample;
         y(i) = y(i-1) + u(i-1,1)*sin(theta_new)*time_sample;
     end
-    velo = [x;y];
+    velo = [x(pred_horizon);y(pred_horizon)];
 %     x,y
 end
