@@ -1,4 +1,4 @@
-function [x,y] = nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon) %this function 
+function [velo] = nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon) %this function 
     x = zeros(pred_horizon,1);
     y = zeros(pred_horizon,1);
     x(1) = agent_pos(1);
@@ -10,5 +10,6 @@ function [x,y] = nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon) %this fun
         x(i) = x(i-1) + u(i-1,1)*cos(theta_new)*time_sample;
         y(i) = y(i-1) + u(i-1,1)*sin(theta_new)*time_sample;
     end
+    velo = [x;y];
 %     x,y
 end

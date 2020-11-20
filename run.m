@@ -6,7 +6,7 @@ control_horizon = 10;
 
 % setting initial parameters
 v_guess = ones(planning_horizon,1);
-w_guess = 0.06*ones(planning_horizon,1);
+w_guess =  -0.06 + (0.06+0.06)*rand(planning_horizon,1);
 
 %setting goal at [125,125] and initial position
 agent_pos = [0,0];
