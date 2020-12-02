@@ -11,7 +11,7 @@ w_guess =  -0.06 + (0.06+0.06)*rand(planning_horizon,1);
 %setting goal at [125,125] and initial position
 agent_pos = [0,0];
 agent_goal = [80,80];
-obst_pos = [30 30];
+obst_pos = [30,30];
 
 agent_pos_list = []; %stores the agent_positions wrt time for ease of plotting
 v_list = []; %stores the linear velocities wrt time for ease of plotting
@@ -42,7 +42,7 @@ waypoints = agent_goal;
 %     waypoints = [waypoints;waypt];
 % end
 
-has_obstacle = 1;
+has_obstacle = 0;
 v_last = 1;
 w_last = w_guess(control_horizon);
 
@@ -54,6 +54,7 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
     % setting theta to the theta obtained at the end of the last control
     % horizon
     theta = theta_chk;
+    agent_pos_init = agent_pos;
     %going over time_steps = control_horizon
     for j = 1:control_horizon
         if (norm(agent_pos - agent_goal)<0.5)
@@ -83,6 +84,8 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
             saveas(F(iter),fullname);
             clf;
             hold on;
+            [~,planner] = nonhn_pts(ctrl,agent_pos_init,theta_chk,time_sample,planning_horizon);
+            plot(planner(:,1),planner(:,2),"go");
             plot(waypoints(:,1),waypoints(:,2),"g+");
             plot(agent_pos_list(:,1),agent_pos_list(:,2),'b*');
             iter = iter + 1;
