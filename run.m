@@ -9,8 +9,9 @@ v_guess = ones(planning_horizon,1);
 w_guess =  -0.06 + (0.06+0.06)*rand(planning_horizon,1);
 
 %setting goal at [125,125] and initial position
-agent_pos = [20,0];
+agent_pos = [0,0];
 agent_goal = [80,80];
+obst_pos = [30 30];
 
 agent_pos_list = []; %stores the agent_positions wrt time for ease of plotting
 v_list = []; %stores the linear velocities wrt time for ease of plotting
@@ -20,14 +21,15 @@ waypoints = []; %list of waypoints of length n
 
 %setting other parameters like radius, average velocity, time sample
 agent_rad = 5;
+obst_rad = 2;
 % v_avg = 5;
 time_sample = 0.1;
 % n = 81; %no of waypoints = (n-1) = 125
 
 chckpt = agent_pos; %this indicates the start of each control horizon
-% theta_chk = atan2(agent_goal(2)-agent_pos(2),agent_goal(1)-agent_pos(1)); %initial value of heading along the intended direction 
-theta_chk = 0;
-theta_chk
+theta_chk = atan2(agent_goal(2)-agent_pos(2),agent_goal(1)-agent_pos(1)); %initial value of heading along the intended direction 
+% theta_chk = 0;
+% theta_chk
 
 % generating waypoints
 % unif_split = 0:125;
@@ -39,6 +41,8 @@ waypoints = agent_goal;
 %     waypt = [unif_split(i),unif_split(i)];
 %     waypoints = [waypoints;waypt];
 % end
+
+has_obstacle = 1;
 v_last = 1;
 w_last = w_guess(control_horizon);
 
@@ -46,7 +50,7 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
     %get predictions for time_steps = planning_horizon,
     % in case no of waypoints < planning horizon, 
     % get predictions for remaining waypoints
-    ctrl = getPreds(planning_horizon,waypoints,v_guess,w_guess,chckpt,time_sample,theta_chk,v_last,w_last);
+    ctrl = getPreds(planning_horizon,waypoints,v_guess,w_guess,chckpt,time_sample,theta_chk,v_last,w_last,has_obstacle,obst_pos,obst_rad,agent_rad);
     % setting theta to the theta obtained at the end of the last control
     % horizon
     theta = theta_chk;
@@ -60,13 +64,13 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
         %ctrl(:,2) is list of 50 angular velocities
         %we take only the first 10 from each list to execute motion
             theta = theta + ctrl(j,2)*time_sample; %updating heading
-            theta
+%             theta
             agent_pos(1) = agent_pos(1) + ctrl(j,1)*cos(theta)*time_sample; % x coordinate
             agent_pos(2) = agent_pos(2) + ctrl(j,1)*sin(theta)*time_sample; % y coordinate
-            agent_pos
+%             agent_pos
             waypts_lim = 100; %sets the axes dimensions for plotting
             % plotting the simulation
-            F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim);
+            F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,has_obstacle);
             plot(chckpt(1),chckpt(2),'r*','markersize',25);
             %appending to the list of linear and angular velocities, and
             %headings
@@ -85,7 +89,7 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
         end
         
     end
-    agent_pos
+%     agent_pos
     %updating theta_chk as theta_checkpoint at the end of each control
     %horizon
     theta_chk = theta;

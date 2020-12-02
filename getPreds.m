@@ -1,4 +1,4 @@
-function ctrl = getPreds(pred_horizon,waypoints,v_guess,w_guess,agent_pos,time_sample,theta,v_last,w_last) %this function performs the optimisation routine using fmincon
+function ctrl = getPreds(pred_horizon,waypoints,v_guess,w_guess,agent_pos,time_sample,theta,v_last,w_last,has_obstacle,obst_pos,obst_rad,agent_rad) %this function performs the optimisation routine using fmincon
     m = size(waypoints);
     options = optimoptions(@fmincon,'Display','iter');
 %     if (m(1) < pred_horizon) %case to handle when no of waypoints < planning_horizon
@@ -15,7 +15,6 @@ function ctrl = getPreds(pred_horizon,waypoints,v_guess,w_guess,agent_pos,time_s
     cost = @(u)norm(nonhn_pts(u,agent_pos,theta,time_sample,pred_horizon)-waypoints(:));
 %     end
     init = [v_guess w_guess];
-%     size(init)
     amin = -3;
     amax = 2;
     alphamax = 0.1;
@@ -28,9 +27,9 @@ function ctrl = getPreds(pred_horizon,waypoints,v_guess,w_guess,agent_pos,time_s
     Aeq = [Aeq; [zeros(1,pred_horizon) 1 zeros(1,pred_horizon-1)]];
     b = [amax*time_sample*ones(pred_horizon-1,1);-amin*time_sample*ones(pred_horizon-1,1);alphamax*time_sample*ones(pred_horizon-1,1);-alphamin*time_sample*ones(pred_horizon-1,1)];
     beq = [v_last;w_last];
-%     size(Aeq)
-%     size(beq)
-    size(b)
+    radii_sum = obst_rad + agent_rad;
+    collisionconst = @(x)colnfn(x,obst_pos,radii_sum,agent_pos,theta,time_sample,pred_horizon);
+%     size(b)
     %performing optimisation
     
     v_ulim = 20*ones(pred_horizon,1);
@@ -39,7 +38,11 @@ function ctrl = getPreds(pred_horizon,waypoints,v_guess,w_guess,agent_pos,time_s
     w_llim = -0.1*ones(pred_horizon,1);
     ulims = [v_ulim w_ulim];
     llims = [v_llim w_llim];
-    ctrl = fmincon(cost,init,A,b,Aeq,beq,llims,ulims,[],options);
+    if (has_obstacle)
+        ctrl = fmincon(cost,init,A,b,Aeq,beq,llims,ulims,collisionconst,options);
+    else
+        ctrl = fmincon(cost,init,A,b,Aeq,beq,llims,ulims,[],options);
+    end
     
     
 end

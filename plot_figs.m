@@ -1,4 +1,4 @@
-function f = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim)
+function f = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,has_obstacle)
     axis([-40 waypts_lim+20 -40 waypts_lim+20]);
     R= ([cos(theta), -sin(theta); sin(theta), cos(theta)]);
     L = agent_rad;
@@ -23,7 +23,9 @@ function f = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim)
     %axis equal;
     patch('Vertices',[x_coor; y_coor]','Faces',[1 2 3 4],'Edgecolor','blue','Facecolor','none','Linewidth',1.2);
     hold on;
-%     rectangle('Position',[obst_pos(1)-obst_rad obst_pos(2)-obst_rad obst_rad*2 obst_rad*2],'Curvature',[1,1]);
+    if (has_obstacle)
+        rectangle('Position',[obst_pos(1)-obst_rad obst_pos(2)-obst_rad obst_rad*2 obst_rad*2],'Curvature',[1,1]);
+    end
     f = plot(agent_goal(1),agent_goal(2),'rx');
     set(gcf,'Position',[600 600 900 900]);
 end
