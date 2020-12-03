@@ -21,7 +21,8 @@ function f = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,
     x_coor=[x_lower_left x_lower_right x_upper_right x_upper_left];
     y_coor=[y_lower_left y_lower_right y_upper_right y_upper_left];
     %axis equal;
-    patch('Vertices',[x_coor; y_coor]','Faces',[1 2 3 4],'Edgecolor','blue','Facecolor','none','Linewidth',1.2);
+%     rectangle('Position',[agent_pos(1)-agent_rad agent_pos(2)-agent_rad agent_rad*2 agent_rad*2],'Curvature',[1,1]); %use for circular agent
+    patch('Vertices',[x_coor; y_coor]','Faces',[1 2 3 4],'Edgecolor','blue','Facecolor','none','Linewidth',1.2);% use this for rectangular agent
     hold on;
     if (has_obstacle)
         rectangle('Position',[obst_pos(1)-obst_rad obst_pos(2)-obst_rad obst_rad*2 obst_rad*2],'Curvature',[1,1]);
