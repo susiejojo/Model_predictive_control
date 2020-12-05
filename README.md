@@ -54,9 +54,9 @@ MPC using various optimisation algorithms
 | Move from (0,0) to (80,80)   | pi/4 | 1 waypoint at goal | None | (30,30) | As in video | [Video9](https://github.com/susiejojo/Model_predictive_control/blob/master/results/simulation_lane_obst_endor.mp4)
 | Move from (0,0) to (50,50)   | pi/4 | 1 waypoint at goal | 0    | (30,30) | As in video | [Video10](https://github.com/susiejojo/Model_predictive_control/blob/master/results/simulation_lane_obst_endor.mp4)
 
-### Observations: 
+### Observations and Points to Remember: 
 
-- Uniformly distributed w give better results than fixed w.
+- Uniformly distributed w vs fixed positive and negative w.
 - Norm of vector vs norm of matrix
 - Adjusting values of vmax and plotting v w.r.t time to ensure a smooth graph
 - Setting acceleration constraints to ensure smoothness of v.
