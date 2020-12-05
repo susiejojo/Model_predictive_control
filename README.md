@@ -34,9 +34,13 @@ MPC using various optimisation algorithms
 - All the results below have been obtained with `planning_horizon = 50` and `control_horizon = 10`.
 - The green points denote the positions returned by the planner over the planning horizon.
 - The blue trajectory is the actual path followed by the bot.
-- The black dashed lines denote lane constraints
+- The black dashed lines denote lane constraints.
 - Obstacle has been assumed to be a circle of a given radius.
-- `vmin = 0`, `vmax = 20`, `wmin = -0.1` `wmax = 0.1`
+- Initial w and v: v = 1, w = uniform(-0.06,0.06)
+- `vmin = 0`, `vmax = 20`, `wmin = -0.1` `wmax = 0.1`. (Till Video7), `wmin = -0.5`, `wmax = 0.5` for Videos 8,9.
+- `MaxFunctionEvaluations = 30000`,`MaxIterations = 10000` for Videos 8 and 9.
+- Lane Constraints(where applicable in case of y=x): left => y = x+25, right => y = x-25
+
 
 | Scenario      | Initial heading | Waypoints | End orientation constraint | Obstacle | Lane Constraint | Video
 | ----------- | ------------------| ----------- | -------------------------- | -------- | --------------- | -----
