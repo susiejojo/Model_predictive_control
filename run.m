@@ -10,7 +10,7 @@ w_guess =  -0.06 + (0.06+0.06)*rand(planning_horizon,1);
 
 %setting goal at [125,125] and initial position
 agent_pos = [0,0];
-agent_goal = [100,100];
+agent_goal = [50,50];
 end_orientation = 0;
 obst_pos = [30,30];
 
@@ -45,14 +45,19 @@ waypoints = agent_goal;
 % end
 
 has_obstacle = 1;
+has_lane_con = 1;
 v_last = 1;
 w_last = w_guess(control_horizon);
 
-while (norm(agent_pos - agent_goal)>0.5 && norm(theta_chk-end_orientation)>0.08) %main loop, plan every 1,11,21... time instant and execute motion for time_instants = control_horizon
+lane_var = 0:0.01:agent_goal(1);
+left_lane = lane_var + 25;
+right_lane = lane_var - 25;
+
+while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time instant and execute motion for time_instants = control_horizon
     %get predictions for time_steps = planning_horizon,
     % in case no of waypoints < planning horizon, 
     % get predictions for remaining waypoints
-    [ctrl,cost] = getPreds(planning_horizon,waypoints,end_orientation,v_guess,w_guess,chckpt,agent_goal,time_sample,theta_chk,v_last,w_last,has_obstacle,obst_pos,obst_rad,agent_rad);
+    [ctrl,cost] = getPreds(planning_horizon,waypoints,end_orientation,v_guess,w_guess,chckpt,agent_goal,time_sample,theta_chk,v_last,w_last,has_obstacle,has_lane_con,obst_pos,obst_rad,agent_rad);
     % setting theta to the theta obtained at the end of the last control
     % horizon
     theta = theta_chk;
@@ -71,7 +76,7 @@ while (norm(agent_pos - agent_goal)>0.5 && norm(theta_chk-end_orientation)>0.08)
             theta
             agent_pos(1) = agent_pos(1) + ctrl(j,1)*cos(theta)*time_sample; % x coordinate
             agent_pos(2) = agent_pos(2) + ctrl(j,1)*sin(theta)*time_sample; % y coordinate
-            agent_pos
+%             agent_pos
             waypts_lim = 100; %sets the axes dimensions for plotting
             % plotting the simulation
             F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,has_obstacle);
@@ -91,6 +96,10 @@ while (norm(agent_pos - agent_goal)>0.5 && norm(theta_chk-end_orientation)>0.08)
             plot(planner(:,1),planner(:,2),"go");
             plot(waypoints(:,1),waypoints(:,2),"g+");
             plot(agent_pos_list(:,1),agent_pos_list(:,2),'b*');
+            if (has_lane_con)
+                plot(lane_var,left_lane,"k--");
+                plot(lane_var,right_lane,"k--");
+            end
             iter = iter + 1;
         end
         

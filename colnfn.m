@@ -1,10 +1,19 @@
-function [c,ceq] = colnfn(u,obst_pos,radii_sum,agent_goal,agent_pos,theta,time_sample,pred_horizon)
+function [c,ceq] = colnfn(u,obst_pos,has_lane_con,has_obstacle,radii_sum,agent_goal,agent_pos,theta,time_sample,pred_horizon)
+    c = [];
     [~,dists] = nonhn_pts(u,agent_pos,agent_goal,theta,time_sample,pred_horizon);
-%     fprintf("dists: %d",size(dists));
-%     size(dists)
-%     size(u)
-%     size(dists)
-    dists = (dists(:,1) - obst_pos(1)).^2 + (dists(:,2) - obst_pos(2)).^2;
-    c = -dists + (radii_sum)^2;
+    lane_dists = dists;
+    dists = (dists(:,1) - obst_pos(1)).^2 + (dists(:,2) - obst_pos(2)).^2+0.1;
+    if (has_obstacle)
+        if ((agent_pos(1)-obst_pos(1))<5 && (agent_pos(2)-obst_pos(2))<5)
+            c = [c;-dists + (radii_sum)^2];
+        end
+    end
+    %for lane constraints
+    if (has_lane_con)
+        for i= 1:pred_horizon
+            c = [c; -(lane_dists(i,1)-1-lane_dists(i,2)+26)]; %left lane y = x + 25
+            c = [c; (lane_dists(i,1)-1-lane_dists(i,2)-24)]; %right lane y = x - 25
+        end
+    end
     ceq = [];
 end

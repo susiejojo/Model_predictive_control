@@ -1,5 +1,5 @@
 function f = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,has_obstacle)
-    axis([-40 waypts_lim+20 -40 waypts_lim+20]);
+    axis([-10 waypts_lim+10 -10 waypts_lim+10]);
     R= ([cos(theta), -sin(theta); sin(theta), cos(theta)]);
     L = agent_rad;
     H = agent_rad;
