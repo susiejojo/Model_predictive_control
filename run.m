@@ -12,7 +12,12 @@ w_guess =  -0.06 + (0.06+0.06)*rand(planning_horizon,1);
 agent_pos = [0,0];
 agent_goal = [50,50];
 end_orientation = 0;
-obst_pos = [30,30];
+obst_x = 20;
+obst_y = 20;
+obst_pos = [obst_x,obst_y];
+obst_theta = 0;
+obst_v = 5*ones(planning_horizon,1);
+obst_w = ones(planning_horizon,1);
 
 agent_pos_list = []; %stores the agent_positions wrt time for ease of plotting
 v_list = []; %stores the linear velocities wrt time for ease of plotting
@@ -23,7 +28,7 @@ cost_list = []; %list of cost function values
 
 %setting other parameters like radius, average velocity, time sample
 agent_rad = 5;
-obst_rad = 2;
+obst_rad = 5;
 % v_avg = 5;
 time_sample = 0.1;
 % n = 81; %no of waypoints = (n-1) = 125
@@ -45,7 +50,7 @@ waypoints = agent_goal;
 % end
 
 has_obstacle = 1;
-has_lane_con = 1;
+has_lane_con = 0;
 v_last = 1;
 w_last = w_guess(control_horizon);
 
@@ -57,7 +62,7 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
     %get predictions for time_steps = planning_horizon,
     % in case no of waypoints < planning horizon, 
     % get predictions for remaining waypoints
-    [ctrl,cost] = getPreds(planning_horizon,waypoints,end_orientation,v_guess,w_guess,chckpt,agent_goal,time_sample,theta_chk,v_last,w_last,has_obstacle,has_lane_con,obst_pos,obst_rad,agent_rad);
+    [ctrl,cost] = getPreds(planning_horizon,waypoints,end_orientation,v_guess,w_guess,chckpt,agent_goal,time_sample,theta_chk,v_last,w_last,has_obstacle,has_lane_con,obst_pos,obst_v,obst_w,obst_rad,obst_theta,agent_rad);
     % setting theta to the theta obtained at the end of the last control
     % horizon
     theta = theta_chk;
@@ -73,13 +78,18 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
         %ctrl(:,2) is list of 50 angular velocities
         %we take only the first 10 from each list to execute motion
             theta = theta + ctrl(j,2)*time_sample; %updating heading
-            theta
+%             theta
             agent_pos(1) = agent_pos(1) + ctrl(j,1)*cos(theta)*time_sample; % x coordinate
             agent_pos(2) = agent_pos(2) + ctrl(j,1)*sin(theta)*time_sample; % y coordinate
 %             agent_pos
             waypts_lim = 100; %sets the axes dimensions for plotting
             % plotting the simulation
-            F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,has_obstacle);
+            F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,obst_theta,has_obstacle);
+            obst_theta = obst_theta + obst_w(1)*time_sample;
+            obst_x = obst_x + obst_v(1)*cos(obst_theta)*time_sample;
+            obst_y = obst_y + obst_v(1)*sin(obst_theta)*time_sample;
+            obst_pos = [obst_x,obst_y];
+            obst_pos
             plot(chckpt(1),chckpt(2),'r*','markersize',25);
             %appending to the list of linear and angular velocities, and
             %headings
