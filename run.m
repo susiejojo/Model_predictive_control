@@ -1,4 +1,4 @@
-clc,clear;
+clc,clearvars -except v_list1 w_list1;
 
 % setting planning and control horizon
 planning_horizon = 50;
@@ -62,6 +62,13 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
     %get predictions for time_steps = planning_horizon,
     % in case no of waypoints < planning horizon, 
     % get predictions for remaining waypoints
+    if (has_obstacle)
+        obst_theta_dummy = obst_theta;
+        for i = 1:planning_horizon
+            obst_w(i) = (pi/4-obst_theta_dummy)/time_sample;
+            obst_theta_dummy = obst_theta_dummy + obst_w(i)*time_sample;
+        end
+    end
     [ctrl,cost] = getPreds(planning_horizon,waypoints,end_orientation,v_guess,w_guess,chckpt,agent_goal,time_sample,theta_chk,v_last,w_last,has_obstacle,has_lane_con,obst_pos,obst_v,obst_w,obst_rad,obst_theta,agent_rad);
     % setting theta to the theta obtained at the end of the last control
     % horizon
@@ -85,9 +92,11 @@ while (norm(agent_pos - agent_goal)>0.5) %main loop, plan every 1,11,21... time 
             waypts_lim = 100; %sets the axes dimensions for plotting
             % plotting the simulation
             F(iter) = plot_figs(agent_pos,agent_rad,agent_goal,theta,waypts_lim,obst_rad,obst_pos,obst_theta,has_obstacle);
-            obst_theta = obst_theta + obst_w(1)*time_sample;
-            obst_x = obst_x + obst_v(1)*cos(obst_theta)*time_sample;
-            obst_y = obst_y + obst_v(1)*sin(obst_theta)*time_sample;
+%             obst_w_now = (pi-obst_theta)/time_sample;
+            obst_w
+            obst_theta = obst_theta + obst_w(j)*time_sample;
+            obst_x = obst_x + obst_v(j)*cos(obst_theta)*time_sample;
+            obst_y = obst_y + obst_v(j)*sin(obst_theta)*time_sample;
             obst_pos = [obst_x,obst_y];
             obst_pos
             plot(chckpt(1),chckpt(2),'r*','markersize',25);
@@ -134,4 +143,6 @@ hold on;
 plot(w_list,'m-');
 figure;
 plot(cost_list,'r-');
+v_list2 = v_list;
+w_list2 = w_list;
 title("Cost function plot");
