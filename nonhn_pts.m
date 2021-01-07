@@ -12,8 +12,9 @@ function [velo,net] = nonhn_pts(u,agent_pos,agent_goal,theta,time_sample,pred_ho
         y(i) = y(i-1) + u(i-1,1)*sin(theta_new)*time_sample;
 %         thetas(i) = theta_new;
     end
-    theta_offset = atan2(agent_goal(2)-x(pred_horizon),agent_goal(1)-y(pred_horizon));
-    velo = [x(pred_horizon);y(pred_horizon);0*theta_new];
+%     theta_offset = atan2(agent_goal(2)-x(pred_horizon),agent_goal(1)-y(pred_horizon));
+%     velo = [x(pred_horizon);y(pred_horizon);0*theta_new];
+    velo = [x(pred_horizon);y(pred_horizon)];
     net = [x,y];
 %     size(velo)
 %     x,y

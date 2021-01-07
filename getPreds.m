@@ -1,6 +1,7 @@
 function [ctrl,cost_calc] = getPreds(pred_horizon,waypoints,end_orientation,v_guess,w_guess,agent_pos,agent_goal,time_sample,theta,v_last,w_last,has_obstacle,has_lane_con,obst_pos,obst_v,obst_w,obst_rad,obst_theta,agent_rad) %this function performs the optimisation routine using fmincon
     m = size(waypoints);
     options = optimoptions(@fmincon,'MaxFunctionEvaluations',30000,'MaxIterations',10000);
+%     options = optimoptions(@fmincon,'Display','iter');
 %     if (m(1) < pred_horizon) %case to handle when no of waypoints < planning_horizon
 %         %cost function with regularisation (u -> cols of v,w)
 % %         wpts = waypoints(1:m(1));
@@ -10,11 +11,12 @@ function [ctrl,cost_calc] = getPreds(pred_horizon,waypoints,end_orientation,v_gu
 %         cost = @(u)norm(nonhn_pts(u,agent_pos,theta,time_sample,m(1))-waypoints(:));
 %     else
 %         wpts = waypoints(1:pred_horizon);
-    cost = @(u)norm(nonhn_pts(u,agent_pos,agent_goal,theta,time_sample,pred_horizon)-[waypoints(:);0*end_orientation]);
+%     cost = @(u)norm(nonhn_pts(u,agent_pos,agent_goal,theta,time_sample,pred_horizon)-[waypoints(:);0*end_orientation]);
+    cost = @(u)norm(nonhn_pts(u,agent_pos,agent_goal,theta,time_sample,pred_horizon)-waypoints(:));
 %     end
     init = [v_guess w_guess];
-    amin = -2;
-    amax = 3;
+    amin = -3;
+    amax = 5;
     alphamax = 0.2;
     alphamin = -0.2;
     A = [diff(eye(pred_horizon)) zeros(pred_horizon-1,pred_horizon)];
@@ -25,8 +27,8 @@ function [ctrl,cost_calc] = getPreds(pred_horizon,waypoints,end_orientation,v_gu
     Aeq = [Aeq; [zeros(1,pred_horizon) 1 zeros(1,pred_horizon-1)]];
     b = [amax*time_sample*ones(pred_horizon-1,1);-amin*time_sample*ones(pred_horizon-1,1);alphamax*time_sample*ones(pred_horizon-1,1);-alphamin*time_sample*ones(pred_horizon-1,1)];
     beq = [v_last;w_last];
-    radii_sum = obst_rad + agent_rad;
-    obst_controls = [obst_v obst_w];
+    radii_sum = obst_rad(1) + agent_rad;
+    obst_controls = [obst_v;obst_w];
     collisionconst = @(x)colnfn(x,obst_pos,has_lane_con,has_obstacle,radii_sum,agent_goal,agent_pos,theta,time_sample,pred_horizon,obst_controls,obst_theta);
     %performing optimisation
     
